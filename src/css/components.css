@@ -1,0 +1,561 @@
+/* ==========================================================================
+   MUNCHKIN ASSISTANT — COMPONENTS & CARD SYSTEM
+   ========================================================================== */
+
+/* Player Cards Grid Toolbar */
+.toolbar-cards {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.quick-info {
+  display: flex;
+  gap: 12px;
+}
+
+.info-tag {
+  background: var(--bg-card);
+  border: 1px solid var(--parchment-border);
+  padding: 6px 12px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.info-tag strong {
+  color: var(--gold-main);
+}
+
+/* CARDS GRID */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* SINGLE MUNCHKIN PLAYER CARD */
+.munchkin-card {
+  background: linear-gradient(180deg, #251d16 0%, #1a140f 100%);
+  border: 3px solid var(--parchment-border);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.munchkin-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+}
+
+/* Turn Highlight on Card */
+.munchkin-card.is-active-turn {
+  border-color: var(--gold-main);
+  box-shadow: var(--shadow-glow-active);
+}
+
+.munchkin-card.is-active-turn::before {
+  content: 'TURNOS ACTUAL';
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--gold-gradient);
+  color: var(--text-dark);
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 2px 10px;
+  border-bottom-left-radius: 8px;
+  letter-spacing: 1px;
+  z-index: 5;
+}
+
+/* Card Header */
+.card-header-bar {
+  background: var(--bg-card-header);
+  border-bottom: 2px solid var(--parchment-border);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-avatar {
+  font-size: 2rem;
+  background: #120e0a;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--gold-dark);
+  flex-shrink: 0;
+}
+
+.card-player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-player-name {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  color: var(--gold-light);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-badges-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.badge-tag {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(230, 184, 0, 0.3);
+  color: var(--text-main);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-menu-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.card-menu-btn:hover { color: var(--gold-main); }
+
+/* Card Body Section */
+.card-body-section {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+/* LEVEL BLOCK */
+.stat-box-level {
+  background: rgba(0,0,0,0.35);
+  border: 2px solid var(--gold-dark);
+  border-radius: var(--border-radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-label-title {
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  color: var(--gold-main);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.level-counter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-counter {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--parchment-border);
+  background: var(--bg-card-header);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.btn-counter:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-main);
+}
+
+.level-value-display {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--gold-light);
+  min-width: 45px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+/* STRENGTH / COMBAT POWER BLOCK */
+.stat-box-strength {
+  background: linear-gradient(135deg, rgba(158, 42, 43, 0.25) 0%, rgba(42, 24, 15, 0.4) 100%);
+  border: 2px solid var(--crimson-red);
+  border-radius: var(--border-radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.strength-value-display {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  font-weight: 900;
+  color: #ff8080;
+  text-shadow: 0 0 10px rgba(255, 80, 80, 0.5);
+}
+
+.btn-manage-items {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--crimson-red);
+  color: var(--text-main);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.btn-manage-items:hover {
+  background: var(--crimson-red);
+  color: #fff;
+}
+
+/* GOLD BLOCK */
+.stat-box-gold {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--parchment-border);
+  border-radius: var(--border-radius-sm);
+  padding: 10px 14px;
+}
+
+.gold-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.gold-value-display {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--gold-main);
+}
+
+.gold-quick-btns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.btn-gold {
+  background: var(--bg-card-header);
+  border: 1px solid var(--parchment-border);
+  color: var(--text-main);
+  padding: 4px 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition-fast);
+}
+
+.btn-gold:hover {
+  border-color: var(--gold-main);
+  color: var(--gold-light);
+  background: #33281c;
+}
+
+.btn-gold-sell {
+  grid-column: span 3;
+  background: rgba(230, 184, 0, 0.15);
+  border-color: var(--gold-dark);
+  color: var(--gold-light);
+  margin-top: 2px;
+}
+
+.btn-gold-sell:hover {
+  background: var(--gold-dark);
+  color: var(--text-dark);
+}
+
+/* Card Action Footer */
+.card-footer-actions {
+  border-top: 1px solid var(--parchment-border);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px 14px;
+  display: flex;
+  gap: 8px;
+}
+
+/* LEADERBOARD TABLE */
+.card-panel {
+  background: var(--bg-card);
+  border: 2px solid var(--parchment-border);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.table-header h2 {
+  font-family: var(--font-title);
+  color: var(--gold-light);
+}
+
+.table-note {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.munchkin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.munchkin-table th, .munchkin-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--parchment-border);
+}
+
+.munchkin-table th {
+  font-family: var(--font-title);
+  color: var(--gold-main);
+  background: var(--bg-card-header);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.munchkin-table tbody tr:hover {
+  background: rgba(255, 215, 0, 0.04);
+}
+
+.munchkin-table tr.row-turn {
+  background: rgba(230, 184, 0, 0.1);
+}
+
+.rank-badge {
+  font-weight: 900;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  background: rgba(255,255,255,0.1);
+}
+
+.rank-badge.rank-1 { background: var(--gold-gradient); color: var(--text-dark); }
+.rank-badge.rank-2 { background: #c0c0c0; color: var(--text-dark); }
+.rank-badge.rank-3 { background: #cd7f32; color: #fff; }
+
+/* HISTORY LOG LIST */
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.history-filters {
+  display: flex;
+  gap: 10px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 550px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.history-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--parchment-border);
+  border-left: 4px solid var(--gold-dark);
+  border-radius: var(--border-radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.92rem;
+}
+
+.history-item.type-LEVEL { border-left-color: var(--gold-main); }
+.history-item.type-GOLD { border-left-color: #ffd700; }
+.history-item.type-COMBAT { border-left-color: var(--crimson-red); }
+.history-item.type-DICE { border-left-color: #d97706; }
+.history-item.type-TURN { border-left-color: var(--emerald-green); }
+
+.history-time {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-right: 10px;
+}
+
+.history-desc {
+  flex: 1;
+}
+
+.history-icon {
+  font-size: 1.1rem;
+  margin-right: 8px;
+}
+
+/* AVATAR PICKER GRID */
+.avatar-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.avatar-option {
+  font-size: 1.8rem;
+  background: #14100c;
+  border: 2px solid var(--parchment-border);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition-fast);
+}
+
+.avatar-option:hover {
+  background: var(--bg-card-header);
+}
+
+.avatar-option.selected {
+  border-color: var(--gold-main);
+  background: rgba(230, 184, 0, 0.2);
+  box-shadow: 0 0 8px rgba(230, 184, 0, 0.5);
+}
+
+/* ITEM MODIFIERS LIST */
+.modifier-summary-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.stat-pill {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--parchment-border);
+  padding: 8px 14px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+}
+
+.stat-pill.main-pill {
+  border-color: var(--crimson-red);
+  background: rgba(158, 42, 43, 0.2);
+  color: var(--gold-light);
+}
+
+.form-inline {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+
+.modifiers-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.modifier-item {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--parchment-border);
+  border-radius: var(--border-radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modifier-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modifier-val {
+  font-weight: 800;
+  color: var(--gold-main);
+  font-size: 1.1rem;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  background: var(--bg-card);
+  border: 2px dashed var(--parchment-border);
+  border-radius: var(--border-radius-md);
+  margin-top: 20px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 12px;
+}
+
+.empty-state h3 {
+  font-family: var(--font-title);
+  color: var(--gold-light);
+  margin-bottom: 6px;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}

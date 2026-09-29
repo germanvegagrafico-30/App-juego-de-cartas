@@ -1,0 +1,126 @@
+/* ==========================================================================
+   MUNCHKIN ASSISTANT — ANIMATIONS & MICRO-INTERACTIONS
+   ========================================================================== */
+
+/* Level Up Glow Pulse */
+.animate-level-up {
+  animation: levelUpPulse 0.8s ease-out;
+}
+
+@keyframes levelUpPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 35px rgba(255, 215, 0, 0.9);
+    border-color: #ffffff;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+  }
+}
+
+/* Gold Increase Pop */
+.animate-gold-pop {
+  animation: goldPop 0.5s ease;
+}
+
+@keyframes goldPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); color: #ffffff; }
+  100% { transform: scale(1); }
+}
+
+/* Penalty / Level Loss Shake */
+.animate-penalty {
+  animation: penaltyShake 0.4s ease;
+}
+
+@keyframes penaltyShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+/* Victory Box Styling */
+.victory-box {
+  background: linear-gradient(180deg, #382512 0%, #17110b 100%);
+  border: 4px solid var(--gold-main);
+  box-shadow: 0 0 50px rgba(255, 215, 0, 0.6);
+  padding: 30px;
+}
+
+.victory-crown {
+  font-size: 5rem;
+  line-height: 1;
+  animation: bounceCrown 2s infinite ease-in-out;
+}
+
+@keyframes bounceCrown {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(5deg); }
+}
+
+.victory-title {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  color: var(--gold-light);
+  letter-spacing: 2px;
+  margin-top: 10px;
+}
+
+.winner-name {
+  font-family: var(--font-title);
+  font-size: 3rem;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  margin: 10px 0;
+}
+
+.victory-sub {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+}
+
+.victory-podium {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.award-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--gold-dark);
+  border-radius: var(--border-radius-sm);
+  padding: 14px 18px;
+  min-width: 140px;
+}
+
+.award-icon {
+  font-size: 2rem;
+}
+
+.award-title {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.award-val {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+  color: var(--gold-main);
+  font-weight: 700;
+}
+
+.victory-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}

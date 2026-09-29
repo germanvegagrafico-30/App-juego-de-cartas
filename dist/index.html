@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Munchkin Assistant Multijugador 🎴⚡</title>
+  <meta name="description" content="Asistente multijugador en tiempo real para partidas físicas del juego de cartas Munchkin. Sincronización instantánea entre celulares y PC.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=MedievalSharp&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script type="module" crossorigin src="/assets/index-DVggGrzc.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DbgrusHr.css">
+</head>
+<body class="theme-dark">
+
+  <div id="app" class="app-wrapper">
+    
+    <!-- TOP NAVIGATION / HEADER -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="logo-badge">🎴</div>
+        <div>
+          <h1 class="game-title">MUNCHKIN</h1>
+          <span class="game-subtitle">Asistente Multijugador Realtime ⚡</span>
+        </div>
+      </div>
+
+      <!-- GAME CODE & CONNECTION BADGE -->
+      <div class="header-code-box" id="headerCodeBox">
+        <span class="code-label">Código:</span>
+        <strong id="displayGameCode" class="game-code-text">MUNCHKIN-XXXX</strong>
+        <button id="btnCopyCode" class="btn btn-sm btn-outline btn-copy-code" title="Copiar Código de Partida">📋 Copiar</button>
+        <span id="connectionBadge" class="badge-tag badge-connected" title="Estado Realtime">🟢 CONECTADO</span>
+      </div>
+
+      <!-- TURN BANNER HEADER BOX -->
+      <div class="header-turn-box" id="turnBanner">
+        <!-- Injected via JS -->
+      </div>
+
+      <div class="header-actions">
+        <button id="btnOpenLobby" class="btn btn-secondary btn-sm" title="Crear o Unirse a Otra Partida">
+          🎮 Partida
+        </button>
+        <button id="btnSoundToggle" class="btn-icon" title="Sonido On/Off">
+          <span id="soundIcon">🔊</span>
+        </button>
+        <button id="btnOpenCombat" class="btn btn-danger btn-combat-quick">
+          <span class="btn-icon-prefix">👹</span> COMBATE
+        </button>
+        <button id="btnOpenAdmin" class="btn btn-secondary">
+          <span>⚙️</span> Admin
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="app-main">
+      
+      <!-- SUB-HEADER / TAB NAVIGATION -->
+      <nav class="nav-tabs">
+        <button class="tab-btn main-tab-btn active" data-tab="tab-cards">
+          <span class="tab-icon">👥</span> Jugadores (<span id="playerCountBadge">0</span>)
+        </button>
+        <button class="tab-btn main-tab-btn" data-tab="tab-table">
+          <span class="tab-icon">🏆</span> Tabla General
+        </button>
+        <button class="tab-btn main-tab-btn" data-tab="tab-history">
+          <span class="tab-icon">📜</span> Historial (<span id="historyCountBadge">0</span>)
+        </button>
+        <button class="tab-btn main-tab-btn" data-tab="tab-stats">
+          <span class="tab-icon">📊</span> Estadísticas
+        </button>
+      </nav>
+
+      <!-- TAB CONTENT PANES -->
+      <div class="tab-content">
+        
+        <!-- TAB 1: PLAYER CARDS GRID -->
+        <section id="tab-cards" class="tab-pane active">
+          <div class="toolbar-cards">
+            <button id="btnAddPlayer" class="btn btn-primary">
+              <span>➕</span> Agregar Jugador
+            </button>
+            <div class="quick-info">
+              <span class="info-tag">🎯 Nivel de Victoria: <strong id="maxLevelDisplay">10</strong></span>
+              <span class="info-tag">🔄 Turno: <strong id="turnCounterDisplay">1</strong></span>
+            </div>
+          </div>
+
+          <div id="playerCardsGrid" class="cards-grid">
+            <!-- Player Cards rendered dynamically -->
+          </div>
+
+          <div id="emptyPlayersState" class="empty-state hidden">
+            <div class="empty-icon">🎴</div>
+            <h3>¡No hay jugadores en la partida!</h3>
+            <p>Hacé clic en "Agregar Jugador" o compartí el código para que se unan tus amigos.</p>
+            <button id="btnEmptyAddPlayer" class="btn btn-primary btn-lg">➕ Crear Primer Jugador</button>
+          </div>
+        </section>
+
+        <!-- TAB 2: LEADERBOARD TABLE -->
+        <section id="tab-table" class="tab-pane">
+          <div class="table-container card-panel">
+            <div class="table-header">
+              <h2>🏆 Tabla de Posiciones</h2>
+              <span class="table-note">Ordenado por Nivel y Fuerza Total</span>
+            </div>
+            <div class="table-responsive">
+              <table id="leaderboardTable" class="munchkin-table">
+                <thead>
+                  <tr>
+                    <th>Pos</th>
+                    <th>Jugador</th>
+                    <th>Raza</th>
+                    <th>Clase</th>
+                    <th>Nivel</th>
+                    <th>Oro</th>
+                    <th>Fuerza</th>
+                    <th>Turno</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Rows injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: CHRONOLOGICAL HISTORY -->
+        <section id="tab-history" class="tab-pane">
+          <div class="history-container card-panel">
+            <div class="history-header">
+              <h2>📜 Historial de Partida</h2>
+              <div class="history-filters">
+                <select id="historyFilterPlayer" class="form-select">
+                  <option value="ALL">Todos los Jugadores</option>
+                </select>
+                <select id="historyFilterType" class="form-select">
+                  <option value="ALL">Todos los Eventos</option>
+                  <option value="LEVEL">⭐ Nivel</option>
+                  <option value="GOLD">🪙 Oro</option>
+                  <option value="COMBAT">⚔️ Combate</option>
+                  <option value="DICE">🎲 Dado / Huida</option>
+                  <option value="TURN">🔄 Turnos</option>
+                  <option value="SYSTEM">⚙️ Sistema</option>
+                </select>
+                <button id="btnClearHistory" class="btn btn-sm btn-outline">Limpiar Historial</button>
+              </div>
+            </div>
+            <div id="historyLogList" class="history-list">
+              <!-- History items dynamically injected -->
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4: STATISTICS -->
+        <section id="tab-stats" class="tab-pane">
+          <div id="statsContainer" class="stats-container">
+            <!-- Stats rendered dynamically -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+      <span>Munchkin Assistant Multijugador — Sincronización en Tiempo Real ⚡</span>
+    </footer>
+
+  </div>
+
+  <!-- MODALS CONTAINER -->
+
+  <!-- 0. LOBBY MODAL (CREAR O UNIRSE A PARTIDA) -->
+  <div id="modalLobby" class="modal-backdrop hidden">
+    <div class="modal-box card-frame modal-lg">
+      <div class="modal-header">
+        <h3>🎴 Partida Multijugador Munchkin</h3>
+        <button class="modal-close" data-close="modalLobby">✖</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="nav-tabs" style="justify-content: center; margin-bottom: 20px;">
+          <button id="lobbyTabCreate" class="tab-btn lobby-tab-btn active">
+            <span>➕ CREAR PARTIDA</span>
+          </button>
+          <button id="lobbyTabJoin" class="tab-btn lobby-tab-btn">
+            <span>🔑 UNIRSE A PARTIDA</span>
+          </button>
+        </div>
+
+        <!-- LOBBY PANE 1: CREAR PARTIDA -->
+        <div id="lobbyPaneCreate" class="tab-pane active">
+          <form id="formLobbyCreate">
+            <div class="form-group">
+              <label for="lobbyCreatePlayerName">Tu Nombre o Apodo:</label>
+              <input type="text" id="lobbyCreatePlayerName" class="form-control" placeholder="Ej: Germán el Destructor" required maxlength="30">
+            </div>
+
+            <div class="form-group">
+              <label>Seleccionar Tu Avatar:</label>
+              <div id="lobbyAvatarCreate" class="avatar-picker-grid">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="lobbyCreateMaxLevel">Nivel de Victoria:</label>
+              <input type="number" id="lobbyCreateMaxLevel" class="form-control" value="10" min="1" max="100">
+              <small class="form-help">Por defecto 10. Se generará un Código Único para invitar a tus amigos.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block">
+              🚀 CREAR Y EMPEZAR PARTIDA
+            </button>
+          </form>
+        </div>
+
+        <!-- LOBBY PANE 2: UNIRSE A PARTIDA -->
+        <div id="lobbyPaneJoin" class="tab-pane">
+          <form id="formLobbyJoin">
+            <div class="form-group">
+              <label for="lobbyJoinCode">Código de la Partida:</label>
+              <input type="text" id="lobbyJoinCode" class="form-control form-control-lg text-center" placeholder="Ej: MUNCHKIN-4821" required style="font-weight: 800; letter-spacing: 2px;">
+            </div>
+
+            <div class="form-group">
+              <label for="lobbyJoinPlayerName">Tu Nombre o Apodo:</label>
+              <input type="text" id="lobbyJoinPlayerName" class="form-control" placeholder="Ej: Juan el Mago" required maxlength="30">
+            </div>
+
+            <div class="form-group">
+              <label>Seleccionar Tu Avatar:</label>
+              <div id="lobbyAvatarJoin" class="avatar-picker-grid">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg btn-block">
+              ⚔️ UNIRSE AL TABLERO
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. ADD / EDIT PLAYER MODAL -->
+  <div id="modalPlayer" class="modal-backdrop hidden">
+    <div class="modal-box card-frame">
+      <div class="modal-header">
+        <h3 id="modalPlayerTitle">🧙‍♂️ Jugador</h3>
+        <button class="modal-close" data-close="modalPlayer">✖</button>
+      </div>
+      <div class="modal-body">
+        <form id="formPlayer">
+          <input type="hidden" id="playerFormId" value="">
+          
+          <div class="form-group">
+            <label for="playerFormName">Nombre del Jugador:</label>
+            <input type="text" id="playerFormName" class="form-control" placeholder="Ej: Germán el Destructor" required maxlength="30">
+          </div>
+
+          <div class="form-group">
+            <label>Seleccionar Avatar:</label>
+            <div id="avatarPickerGrid" class="avatar-picker-grid">
+              <!-- Avatar options dynamically populated -->
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="playerFormRace">Raza:</label>
+              <select id="playerFormRace" class="form-select">
+                <option value="sin_raza">🧬 Sin Raza (Humano simple)</option>
+                <option value="enano">🧔 Enano (Lleva más cartas)</option>
+                <option value="elfo">🧝 Elfo (+1 Huir / Nivel x ayuda)</option>
+                <option value="mediano">🍕 Mediano (Vende 2x1 oro)</option>
+                <option value="orc">👹 Orco (Resistente)</option>
+                <option value="gnome">🧙‍♂️ Gnomo</option>
+                <option value="mestizo">🧬 Mestizo / Multi-Raza</option>
+              </select>
+            </div>
+            <div class="form-group col-6">
+              <label for="playerFormClass">Clase:</label>
+              <select id="playerFormClass" class="form-select">
+                <option value="sin_clase">🛡️ Sin Clase</option>
+                <option value="guerrero">⚔️ Guerrero (Empates ganan / Berserk)</option>
+                <option value="mago">🪄 Mago (Descartes / Huida mágica)</option>
+                <option value="clerigo">📜 Clérigo (Resurrección)</option>
+                <option value="ladron">🗡️ Ladrón (Robo / Apuñalar)</option>
+                <option value="bard">🎻 Bardo (Encanto)</option>
+                <option value="super_munchkin">⭐ Super Munchkin (Multi-Clase)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group col-6">
+              <label for="playerFormLevel">Nivel Inicial:</label>
+              <input type="number" id="playerFormLevel" class="form-control" value="1" min="1" max="100">
+            </div>
+            <div class="form-group col-6">
+              <label for="playerFormGold">Oro Inicial:</label>
+              <input type="number" id="playerFormGold" class="form-control" value="0" min="0" step="100">
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-close="modalPlayer">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Jugador</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ITEM MODIFIERS MODAL -->
+  <div id="modalModifiers" class="modal-backdrop hidden">
+    <div class="modal-box card-frame modal-lg">
+      <div class="modal-header">
+        <h3>⚔️ Bonificadores y Objetos — <span id="modPlayerName">Jugador</span></h3>
+        <button class="modal-close" data-close="modalModifiers">✖</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="modifier-summary-bar">
+          <div class="stat-pill">Nivel Base: <strong id="modBaseLevel">1</strong></div>
+          <div class="stat-pill">Bonificadores Equipados: <strong id="modTotalItems">+0</strong></div>
+          <div class="stat-pill main-pill">Fuerza Total: <strong id="modTotalStrength">1</strong></div>
+        </div>
+
+        <div class="add-modifier-form">
+          <h4>➕ Agregar Nuevo Objeto / Poción</h4>
+          <form id="formAddModifier" class="form-inline">
+            <input type="text" id="modInputName" class="form-control" placeholder="Ej: Espada de las 2 Manos, Poción..." required>
+            <input type="number" id="modInputValue" class="form-control" placeholder="Bonus (+3, -1)" required value="1">
+            <select id="modInputType" class="form-select">
+              <option value="equip">🎒 Objeto Equipado (Permanente)</option>
+              <option value="temp">🧪 Poción / Modificador Temporal</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Agregar</button>
+          </form>
+        </div>
+
+        <div class="modifiers-list-container">
+          <h4>🎒 Objetos y Bonificadores Actuales</h4>
+          <ul id="modifiersList" class="modifiers-list">
+            <!-- Items injected dynamically -->
+          </ul>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="modalModifiers">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. COMBAT ASSISTANT MODAL -->
+  <div id="modalCombat" class="modal-backdrop hidden">
+    <div class="modal-box card-frame modal-xl">
+      <div class="modal-header header-combat">
+        <h3>👹 Asistente de Combate Munchkin</h3>
+        <button class="modal-close" data-close="modalCombat">✖</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="combat-grid">
+          
+          <!-- LEFT COLUMN: HEROES -->
+          <div class="combat-side side-hero card-panel">
+            <h4 class="side-title">🛡️ Lado del Jugador</h4>
+            
+            <div class="form-group">
+              <label for="combatMainPlayer">Jugador Principal en Combate:</label>
+              <select id="combatMainPlayer" class="form-select"></select>
+            </div>
+
+            <div class="combat-hero-card" id="mainPlayerCombatCard">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <div class="form-group helper-group">
+              <label for="combatHelperPlayer">🤝 Ayudante (Opcional):</label>
+              <select id="combatHelperPlayer" class="form-select">
+                <option value="NONE">Sin Ayudante</option>
+              </select>
+            </div>
+
+            <div class="combat-hero-card helper-card hidden" id="helperPlayerCombatCard">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <div class="form-group">
+              <label for="combatPlayerExtraMod">Pociones / Bonos Temporales Extra del Jugador:</label>
+              <div class="input-plus-minus">
+                <button type="button" class="btn-step" data-target="combatPlayerExtraMod" data-step="-1">-</button>
+                <input type="number" id="combatPlayerExtraMod" class="form-control" value="0">
+                <button type="button" class="btn-step" data-target="combatPlayerExtraMod" data-step="1">+</button>
+              </div>
+            </div>
+
+            <div class="side-total hero-total">
+              Fuerza Total Heroica: <strong id="totalHeroStrength">0</strong>
+            </div>
+          </div>
+
+          <!-- CENTER COLUMN: VS METER & OUTCOME -->
+          <div class="combat-center">
+            <div class="vs-badge">VS</div>
+
+            <div id="combatStatusBox" class="combat-status-box status-win">
+              <div class="status-icon" id="combatStatusIcon">🟢</div>
+              <div class="status-text" id="combatStatusText">¡GANÁS!</div>
+              <div class="status-sub" id="combatStatusSub">Tenés más fuerza que los monstruos</div>
+            </div>
+
+            <!-- COMBAT OUTCOME ACTIONS -->
+            <div class="combat-actions">
+              <button id="btnCombatWin" class="btn btn-success btn-lg btn-block">
+                🏆 ¡Ganar Combate! (+Nivel/Tesoros)
+              </button>
+              <button id="btnCombatEscape" class="btn btn-warning btn-lg btn-block">
+                🎲 Intentar Huir (Tirar Dado)
+              </button>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: MONSTERS -->
+          <div class="combat-side side-monster card-panel">
+            <h4 class="side-title">👹 Lado del Monstruo</h4>
+
+            <div class="form-group">
+              <label for="combatMonsterLevel">Nivel Base del Monstruo:</label>
+              <input type="number" id="combatMonsterLevel" class="form-control form-control-lg" value="1" min="1">
+            </div>
+
+            <div class="form-group">
+              <label for="combatMonsterCount">Cantidad de Monstruos:</label>
+              <div class="input-plus-minus">
+                <button type="button" class="btn-step" data-target="combatMonsterCount" data-step="-1">-</button>
+                <input type="number" id="combatMonsterCount" class="form-control" value="1" min="1">
+                <button type="button" class="btn-step" data-target="combatMonsterCount" data-step="1">+</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="combatMonsterExtraMod">Bonificadores del Monstruo (Cartas de +5, +10, Furioso...):</label>
+              <div class="input-plus-minus">
+                <button type="button" class="btn-step" data-target="combatMonsterExtraMod" data-step="-5">-5</button>
+                <input type="number" id="combatMonsterExtraMod" class="form-control" value="0">
+                <button type="button" class="btn-step" data-target="combatMonsterExtraMod" data-step="5">+5</button>
+              </div>
+            </div>
+
+            <div class="side-total monster-total">
+              Fuerza Total del Monstruo: <strong id="totalMonsterStrength">0</strong>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. DICE ROLLER / ESCAPE MODAL -->
+  <div id="modalDice" class="modal-backdrop hidden">
+    <div class="modal-box card-frame text-center">
+      <div class="modal-header">
+        <h3>🎲 Tirada de Huida de Combate</h3>
+        <button class="modal-close" data-close="modalDice">✖</button>
+      </div>
+      <div class="modal-body">
+        <p class="dice-instruction">Necesitás sacar un <strong>5 o 6</strong> para escapar con éxito (o un <strong>4+</strong> si sos Elfo).</p>
+
+        <!-- 3D DICE DISPLAY -->
+        <div class="dice-stage">
+          <div id="diceCube" class="dice-cube">
+            <div class="face front">1</div>
+            <div class="face back">6</div>
+            <div class="face right">3</div>
+            <div class="face left">4</div>
+            <div class="face top">2</div>
+            <div class="face bottom">5</div>
+          </div>
+        </div>
+
+        <div id="diceResultBox" class="dice-result-box hidden">
+          <div id="diceResultNumber" class="dice-result-number">5</div>
+          <div id="diceResultText" class="dice-result-text">¡ESCAPASTE CON ÉXITO! 🎉</div>
+        </div>
+
+        <div class="dice-actions">
+          <button id="btnRollDice" class="btn btn-warning btn-lg">🎲 ¡LANZAR DADO!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. SELL GOLD FOR LEVEL CONVERTER MODAL -->
+  <div id="modalSellGold" class="modal-backdrop hidden">
+    <div class="modal-box card-frame">
+      <div class="modal-header">
+        <h3>🪙 Vender Objetos por Niveles</h3>
+        <button class="modal-close" data-close="modalSellGold">✖</button>
+      </div>
+      <div class="modal-body">
+        <p>1.000 piezas de oro te otorgan <strong>+1 Nivel</strong> (salvo para subir al nivel de victoria final).</p>
+        <div class="form-group">
+          <label>Jugador:</label>
+          <input type="text" id="sellGoldPlayerName" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+          <label>Oro Actual:</label>
+          <input type="text" id="sellGoldCurrentGold" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+          <label for="sellGoldAmount">Cantidad de Oro a Vender:</label>
+          <select id="sellGoldAmount" class="form-select">
+            <option value="1000">1.000 Oro (+1 Nivel)</option>
+            <option value="2000">2.000 Oro (+2 Niveles)</option>
+            <option value="3000">3.000 Oro (+3 Niveles)</option>
+            <option value="4000">4.000 Oro (+4 Niveles)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="modalSellGold">Cancelar</button>
+        <button id="btnConfirmSellGold" class="btn btn-success">🪙 Vender y Subir Nivel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. ADMIN & GAME CONFIG MODAL -->
+  <div id="modalAdmin" class="modal-backdrop hidden">
+    <div class="modal-box card-frame">
+      <div class="modal-header">
+        <h3>⚙️ Panel de Administración y Partida</h3>
+        <button class="modal-close" data-close="modalAdmin">✖</button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="admin-section">
+          <h4>🎯 Configuración de la Partida</h4>
+          <div class="form-group">
+            <label for="cfgMaxLevel">Nivel de Victoria (Máximo):</label>
+            <input type="number" id="cfgMaxLevel" class="form-control" value="10" min="1" max="100">
+            <small class="form-help">Por defecto 10 para Munchkin estándar. (Ej: 20 para Epic Munchkin)</small>
+          </div>
+          <button id="btnSaveConfig" class="btn btn-primary btn-sm">Guardar Configuración</button>
+        </div>
+
+        <hr class="divider">
+
+        <div class="admin-section">
+          <h4>💾 Guardado & Carga de Partida</h4>
+          <div class="admin-btn-grid">
+            <button id="btnExportGame" class="btn btn-secondary">
+              📥 Guardar Partida (Descargar JSON)
+            </button>
+            <label for="importGameFile" class="btn btn-secondary btn-file">
+              📤 Cargar Partida (Importar JSON)
+              <input type="file" id="importGameFile" accept=".json" class="hidden">
+            </label>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="admin-section danger-zone">
+          <h4>⚠️ Zona de Peligro</h4>
+          <p>Reiniciar la partida borrará todos los datos de los jugadores actuales y comenzará una sesión limpia.</p>
+          <button id="btnResetGame" class="btn btn-danger">
+            🔄 Reiniciar Partida Completa
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. CONFIRMATION GENERIC MODAL -->
+  <div id="modalConfirm" class="modal-backdrop hidden">
+    <div class="modal-box card-frame">
+      <div class="modal-header">
+        <h3 id="confirmTitle">⚠️ Confirmación</h3>
+        <button class="modal-close" data-close="modalConfirm">✖</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage">¿Estás seguro de realizar esta acción?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="modalConfirm">Cancelar</button>
+        <button id="btnConfirmAction" class="btn btn-danger">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. VICTORY CELEBRATION MODAL -->
+  <div id="modalVictory" class="modal-backdrop hidden">
+    <div class="modal-box card-frame modal-lg victory-box text-center">
+      <div class="victory-crown">👑</div>
+      <h2 class="victory-title">¡TENEMOS UN GANADOR!</h2>
+      <h3 id="winnerNameDisplay" class="winner-name">Germán</h3>
+      <p class="victory-sub">¡Ha alcanzado el Nivel de Victoria de Munchkin!</p>
+
+      <div id="victoryPodium" class="victory-podium">
+        <!-- Badges & stats injected dynamically -->
+      </div>
+
+      <div class="victory-actions">
+        <button type="button" class="btn btn-primary btn-lg" data-close="modalVictory">
+          📜 Continuar Mirando Partida
+        </button>
+        <button id="btnVictoryNewGame" class="btn btn-success btn-lg">
+          🔄 Iniciar Nueva Partida
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

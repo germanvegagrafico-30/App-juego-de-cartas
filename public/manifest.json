@@ -1,0 +1,19 @@
+{
+  "name": "Munchkin Assistant Multijugador",
+  "short_name": "Munchkin",
+  "description": "Asistente digital multijugador y calculador de combate para partidas físicas de Munchkin",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#12100d",
+  "theme_color": "#d4af37",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

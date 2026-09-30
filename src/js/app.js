@@ -1,5 +1,5 @@
 /* ==========================================================================
-   APP ENTRY POINT — MUNCHKIN ASSISTANT & DASHBOARD MULTIJUGADOR
+   APP ENTRY POINT — MUNCHKIN ASSISTANT & DASHBOARD MULTIJUGADOR PWA
    ========================================================================== */
 
 import { state } from './state.js';
@@ -67,7 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // 9. Setup Copy Game Code Button
   setupCopyCodeControl();
 
-  // 10. Setup Sub-components
+  // 10. Setup PWA Installer & Service Worker Registration
+  setupPwaInstaller();
+
+  // 11. Setup Sub-components
   setupAdminPanel();
   setupCombatModal();
   setupDiceRoller();
@@ -80,6 +83,45 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ==========================================================================
    HELPER INITIALIZERS
    ========================================================================== */
+
+function setupPwaInstaller() {
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then((reg) => {
+        console.log('✅ Service Worker registered:', reg.scope);
+      }).catch((err) => {
+        console.warn('Service Worker info:', err);
+      });
+    });
+  }
+
+  let deferredPrompt;
+  const btnInstall = document.getElementById('btnInstallPwa');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+
+  if (btnInstall) {
+    btnInstall.onclick = async () => {
+      Sound.playClick();
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('User accepted PWA installation');
+        }
+        deferredPrompt = null;
+      } else {
+        // Show PWA installation modal guide for iPhone / Android
+        const modal = document.getElementById('modalPwaInstall');
+        if (modal) modal.classList.remove('hidden');
+      }
+    };
+  }
+}
 
 function setupTabNavigation() {
   const tabs = document.querySelectorAll('.main-tab-btn');

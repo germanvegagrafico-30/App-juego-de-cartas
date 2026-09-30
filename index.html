@@ -53,6 +53,9 @@
       </div>
 
       <div class="header-actions">
+        <button id="btnOpenMusic" class="btn btn-secondary btn-sm" title="Elegir Canción Medieval">
+          🎵 Música
+        </button>
         <button id="btnInstallPwa" class="btn btn-warning btn-sm" title="Instalar aplicación en tu pantalla de inicio">
           📲 Instalar en Celular
         </button>
@@ -191,6 +194,83 @@
   </div>
 
   <!-- MODALS CONTAINER -->
+
+  <!-- MEDIEVAL MUSIC JUKEBOX MODAL -->
+  <div id="modalMusicPlayer" class="modal-backdrop hidden">
+    <div class="modal-box card-frame modal-lg">
+      <div class="modal-header">
+        <h3>🎵 Reproductor de Música Medieval</h3>
+        <button class="modal-close" data-close="modalMusicPlayer">✖</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 15px; color: var(--text-muted);">Elegí una canción ambiental medieval para escuchar durante la partida:</p>
+
+        <div class="music-options-list" style="display: flex; flex-direction: column; gap: 12px;">
+          
+          <div class="award-card" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 2.2rem;">🍻</span>
+              <div>
+                <strong style="color: var(--gold-light); font-size: 1.1rem; display: block;">1. La Taverna del Dragón</strong>
+                <small class="text-muted">Ritmo juglar alegre, festivo y divertido</small>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-play-theme" data-theme="tavern">
+              ▶️ Escuchar
+            </button>
+          </div>
+
+          <div class="award-card" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 2.2rem;">⚔️</span>
+              <div>
+                <strong style="color: var(--gold-light); font-size: 1.1rem; display: block;">2. La Marcha de los Héroes</strong>
+                <strong style="color: #ff9999; display: block; font-size: 0.8rem;">Épica y Fantástica</strong>
+                <small class="text-muted">Melodía de exploración RPG medieval</small>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-play-theme" data-theme="march">
+              ▶️ Escuchar
+            </button>
+          </div>
+
+          <div class="award-card" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 2.2rem;">🧝</span>
+              <div>
+                <strong style="color: var(--gold-light); font-size: 1.1rem; display: block;">3. El Bosque Místico</strong>
+                <small class="text-muted">Música ambiente relajante de arpa y flauta</small>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-play-theme" data-theme="forest">
+              ▶️ Escuchar
+            </button>
+          </div>
+
+          <div class="award-card" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 2.2rem;">👹</span>
+              <div>
+                <strong style="color: var(--gold-light); font-size: 1.1rem; display: block;">4. La Mazmorra del Munchkin</strong>
+                <small class="text-muted">Ritmo cómico, travieso y satírico de mazmorra</small>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-play-theme" data-theme="dungeon">
+              ▶️ Escuchar
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="modal-footer" style="justify-content: space-between;">
+        <button id="btnStopMusic" class="btn btn-danger">
+          ⏹️ Detener Música
+        </button>
+        <button type="button" class="btn btn-secondary" data-close="modalMusicPlayer">Cerrar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- PWA INSTALLATION MODAL GUIDE -->
   <div id="modalPwaInstall" class="modal-backdrop hidden">

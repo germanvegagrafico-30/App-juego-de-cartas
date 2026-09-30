@@ -1,11 +1,15 @@
 /* ==========================================================================
-   AUDIO SYNTHESIZER — Web Audio API Fantasy Sound Effects
+   AUDIO SYNTHESIZER — Web Audio API Fantasy Sound Effects & Medieval Music
    ========================================================================== */
 
 class SoundSynthesizer {
   constructor() {
     this.ctx = null;
     this.enabled = true;
+    this.musicEnabled = false;
+    this.currentTheme = null;
+    this.musicTimer = null;
+    this.musicVolume = 0.12;
   }
 
   init() {
@@ -28,6 +32,10 @@ class SoundSynthesizer {
     }
     return this.enabled;
   }
+
+  /* ==========================================================================
+     SOUND EFFECTS (SFX)
+     ========================================================================== */
 
   playClick() {
     if (!this.enabled) return;
@@ -125,7 +133,6 @@ class SoundSynthesizer {
     this.init();
     if (!this.ctx) return;
 
-    // Rattle noise
     for (let i = 0; i < 6; i++) {
       setTimeout(() => {
         if (!this.ctx) return;
@@ -170,6 +177,89 @@ class SoundSynthesizer {
       osc.start(this.ctx.currentTime + note.t);
       osc.stop(this.ctx.currentTime + note.t + note.d);
     });
+  }
+
+  /* ==========================================================================
+     MEDIEVAL BACKGROUND MUSIC SYNTHESIZER (BGM)
+     ========================================================================== */
+
+  stopMusic() {
+    if (this.musicTimer) {
+      clearInterval(this.musicTimer);
+      this.musicTimer = null;
+    }
+    this.musicEnabled = false;
+    this.currentTheme = null;
+  }
+
+  playMusicTheme(themeKey) {
+    this.init();
+    if (!this.ctx) return;
+
+    this.stopMusic();
+    this.musicEnabled = true;
+    this.currentTheme = themeKey;
+
+    let step = 0;
+
+    // Define Procedural Melodies per Theme
+    const melodies = {
+      tavern: [
+        // La Taverna del Dragón (Alegre D Dorian Juglar)
+        { f: 293.66, d: 0.25 }, { f: 349.23, d: 0.25 }, { f: 440.00, d: 0.25 }, { f: 392.00, d: 0.25 },
+        { f: 329.63, d: 0.25 }, { f: 349.23, d: 0.25 }, { f: 293.66, d: 0.50 }, { f: 440.00, d: 0.25 },
+        { f: 523.25, d: 0.25 }, { f: 440.00, d: 0.25 }, { f: 392.00, d: 0.25 }, { f: 349.23, d: 0.50 }
+      ],
+      march: [
+        // Marcha de los Héroes (Épica A Minor)
+        { f: 220.00, d: 0.35 }, { f: 261.63, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 392.00, d: 0.35 },
+        { f: 349.23, d: 0.35 }, { f: 329.63, d: 0.35 }, { f: 293.66, d: 0.35 }, { f: 329.63, d: 0.70 }
+      ],
+      forest: [
+        // Bosque Místico (Suave Arpa E Aeolian)
+        { f: 329.63, d: 0.45 }, { f: 493.88, d: 0.45 }, { f: 392.00, d: 0.45 }, { f: 369.99, d: 0.45 },
+        { f: 329.63, d: 0.45 }, { f: 293.66, d: 0.45 }, { f: 329.63, d: 0.90 }
+      ],
+      dungeon: [
+        // Mazmorra del Munchkin (Traviesa G Minor)
+        { f: 196.00, d: 0.20 }, { f: 233.08, d: 0.20 }, { f: 293.66, d: 0.20 }, { f: 261.63, d: 0.20 },
+        { f: 277.18, d: 0.20 }, { f: 293.66, d: 0.20 }, { f: 196.00, d: 0.40 }
+      ]
+    };
+
+    const notes = melodies[themeKey] || melodies.tavern;
+    const intervalMs = themeKey === 'dungeon' ? 260 : themeKey === 'tavern' ? 280 : 400;
+
+    const playStep = () => {
+      if (!this.musicEnabled || !this.ctx) return;
+
+      const note = notes[step % notes.length];
+      step++;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      // Instrument timbre based on theme
+      if (themeKey === 'tavern') osc.type = 'triangle';
+      else if (themeKey === 'march') osc.type = 'sawtooth';
+      else if (themeKey === 'forest') osc.type = 'sine';
+      else osc.type = 'square';
+
+      osc.frequency.setValueAtTime(note.f, this.ctx.currentTime);
+
+      gain.gain.setValueAtTime(0, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(this.musicVolume, this.ctx.currentTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + note.d);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start();
+      osc.stop(this.ctx.currentTime + note.d);
+    };
+
+    playStep();
+    this.musicTimer = setInterval(playStep, intervalMs);
   }
 }
 

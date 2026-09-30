@@ -2,6 +2,11 @@
    APP ENTRY POINT — MUNCHKIN ASSISTANT & DASHBOARD MULTIJUGADOR PWA
    ========================================================================== */
 
+import '../css/main.css';
+import '../css/components.css';
+import '../css/combat.css';
+import '../css/animations.css';
+
 import { state } from './state.js';
 import { Sound } from './audio.js';
 import { renderPlayerCards, renderAvatarPicker, updateModifiersModalUI } from './components/playerCard.js';
@@ -61,8 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. Setup Item Modifiers Form Handler
   setupModifiersForm();
 
-  // 8. Setup Sound Toggle Button
+  // 8. Setup Sound & Music Player Controls
   setupSoundControl();
+  setupMusicPlayerControl();
 
   // 9. Setup Copy Game Code Button
   setupCopyCodeControl();
@@ -83,6 +89,49 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ==========================================================================
    HELPER INITIALIZERS
    ========================================================================== */
+
+function setupMusicPlayerControl() {
+  const btnOpen = document.getElementById('btnOpenMusic');
+  const modal = document.getElementById('modalMusicPlayer');
+  if (btnOpen && modal) {
+    btnOpen.onclick = () => {
+      Sound.playClick();
+      modal.classList.remove('hidden');
+    };
+  }
+
+  // Play Medieval Themes
+  document.querySelectorAll('.btn-play-theme').forEach(btn => {
+    btn.onclick = () => {
+      const theme = btn.dataset.theme;
+      Sound.playMusicTheme(theme);
+
+      // Update UI buttons
+      document.querySelectorAll('.btn-play-theme').forEach(b => {
+        b.textContent = '▶️ Escuchar';
+        b.classList.remove('btn-success');
+        b.classList.add('btn-primary');
+      });
+
+      btn.textContent = '🔊 Sonando...';
+      btn.classList.remove('btn-primary');
+      btn.classList.add('btn-success');
+    };
+  });
+
+  // Stop Music
+  const btnStop = document.getElementById('btnStopMusic');
+  if (btnStop) {
+    btnStop.onclick = () => {
+      Sound.stopMusic();
+      document.querySelectorAll('.btn-play-theme').forEach(b => {
+        b.textContent = '▶️ Escuchar';
+        b.classList.remove('btn-success');
+        b.classList.add('btn-primary');
+      });
+    };
+  }
+}
 
 function setupPwaInstaller() {
   // Register Service Worker

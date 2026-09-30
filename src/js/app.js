@@ -139,6 +139,7 @@ function setupPwaInstaller() {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js').then((reg) => {
         console.log('✅ Service Worker registered:', reg.scope);
+        reg.update();
       }).catch((err) => {
         console.warn('Service Worker info:', err);
       });

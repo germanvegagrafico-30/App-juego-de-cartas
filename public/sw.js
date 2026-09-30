@@ -1,29 +1,16 @@
 /* ==========================================================================
-   SERVICE WORKER — PWA Offline Caching & Installation
+   SERVICE WORKER — PWA Network-First Caching & Auto-Update
    ========================================================================== */
 
-const CACHE_NAME = 'munchkin-app-v1';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/src/css/main.css',
-  '/src/css/components.css',
-  '/src/css/combat.css',
-  '/src/css/animations.css',
-  '/src/js/app.js'
-];
+const CACHE_NAME = 'munchkin-app-v3';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
-  );
+  // Activate new service worker immediately
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
+  // Purge old cache versions
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
@@ -39,30 +26,33 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests for static assets, bypass Supabase API requests
+  // Only handle GET requests, bypass Supabase API and WebSocket requests
   if (event.request.method !== 'GET' || event.request.url.includes('supabase.co')) {
     return;
   }
 
+  // Network-First strategy: Always fetch fresh code from Vercel CDN first
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+        return networkResponse;
+      })
+      .catch(() => {
+        // Offline fallback: Use cached files if user has no internet
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          if (event.request.headers.get('accept')?.includes('text/html')) {
+            return caches.match('/') || caches.match('/index.html');
+          }
         });
-        return response;
-      }).catch(() => {
-        if (event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('/index.html');
-        }
-      });
-    })
+      })
   );
 });
